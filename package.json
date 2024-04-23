@@ -23,5 +23,8 @@
   "homepage": "https://github.com/arthuredelstein/timestamper#readme",
   "dependencies": {
     "opentimestamps": "^0.4.9"
+  },
+  "devDependencies": {
+    "standard": "^17.1.0"
   }
 }
