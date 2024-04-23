@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/arthuredelstein/timestamper/issues"
   },
-  "homepage": "https://github.com/arthuredelstein/timestamper#readme"
+  "homepage": "https://github.com/arthuredelstein/timestamper#readme",
+  "dependencies": {
+    "opentimestamps": "^0.4.9"
+  }
 }

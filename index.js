@@ -47,7 +47,13 @@ const writeResults = async (date, results) => {
     digest: "SHA-256",
     source: "timestamper"
   };
-  await fsPromises.writeFile(`wikimedia_digests_${date}.json`, JSON.stringify(results));
+  const file = `wikimedia_digests_${date}.json`;
+  await fsPromises.writeFile(file, JSON.stringify(results));
+  return file;
 };  				     
       
-
+const timestamp = (file) => {
+  const result = execSync(`npx ots-cli.js stamp ${file}`).toString();
+  console.log(result);
+  result `${file}.ots`;
+};
