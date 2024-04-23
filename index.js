@@ -55,5 +55,6 @@ const writeResults = async (date, results) => {
 const timestamp = (file) => {
   const result = execSync(`npx ots-cli.js stamp ${file}`).toString();
   console.log(result);
-  result `${file}.ots`;
+  return `${file}.ots`;
 };
+
