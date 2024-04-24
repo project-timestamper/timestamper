@@ -1,7 +1,8 @@
+const fs = require('node:fs')
 const fsPromises = require('node:fs/promises')
+const minimist = require('minimist')
 const path = require('node:path')
 const { execSync } = require('node:child_process')
-const minimist = require('minimist')
 
 const LOCAL_BASE = '/public/dumps/public/'
 
@@ -45,7 +46,7 @@ const getAllShaResults = async (date) => {
   return results
 }
 
-const writeResults = async (date, results) => {
+const writeResults = async (date, results, file) => {
   const data = {
     snapshot: date,
     files: results,
@@ -55,9 +56,7 @@ const writeResults = async (date, results) => {
     local_base: LOCAL_BASE,
     base: ['https://dumps.wikimedia.org/', 'https://dumps.wikimedia.your.org/']
   }
-  const file = path.resolve(`../public_html/data/wikimedia_digests_${date}.json`)
   await fsPromises.writeFile(file, JSON.stringify(data))
-  return file
 }
 
 const timestamp = (file) => {
@@ -67,20 +66,39 @@ const timestamp = (file) => {
 }
 
 const runDate = async (date) => {
+  const outputFile = path.resolve(`../public_html/data/wikimedia_digests_${date}.json`)
+  if (fs.existsSync(outputFile)) {
+    console.log(`${outputFile} already exists; skipping.`)
+    return
+  }
   const results = await getAllShaResults(date)
-  const resultsFile = await writeResults(date, results)
-  timestamp(resultsFile)
+  await writeResults(date, results, outputFile)
+  timestamp(outputFile)
 }
 
-const latestDumpDate = () => {
-  return '20220101'
+const strToDate = (s) => {
+  const year = s.substring(0, 4)
+  const month = s.substring(4, 6)
+  const day = s.substring(6, 8)
+  return new Date(year, month - 1, day)
 }
 
-const main = async () => {
-  const { _: dates } = minimist(process.argv.slice(2))
+const latestDumpDate = async () => {
+  const enwikiDir = LOCAL_BASE + 'enwiki/'
+  const dateDirs = await getItems(enwikiDir)
+  const dateDirsTrimmed = dateDirs.filter(x => !x.endsWith('latest'))
+  const mostRecentDateDir = dateDirsTrimmed[dateDirsTrimmed.length - 1]
+  return mostRecentDateDir.replace(enwikiDir, '')
+}
+
+const timeElapsed = (d1, d2) => (d2 - d1) / (1000 * 60 * 60 * 24)
+
+const main = async (dates) => {
   if (dates === undefined || dates.length === 0) {
-    const date = await latestDumpDate()
-    await runDate(date)
+    const dumpDate = await latestDumpDate()
+    if (timeElapsed(strToDate(dumpDate), new Date()) > 4) {
+      await runDate(dumpDate)
+    }
   } else {
     for (const date of dates) {
       await runDate(date)
@@ -89,5 +107,6 @@ const main = async () => {
 }
 
 if (require.main === module) {
-  main()
+  const { _: dates } = minimist(process.argv.slice(2))
+  main(dates)
 }
