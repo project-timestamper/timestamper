@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/arthuredelstein/timestamper#readme",
   "dependencies": {
+    "minimist": "^1.2.8",
     "opentimestamps": "^0.4.9"
   },
   "devDependencies": {

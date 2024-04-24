@@ -1,6 +1,7 @@
 const fsPromises = require('node:fs/promises')
 const path = require('node:path')
 const { execSync } = require('node:child_process')
+const minimist = require('minimist')
 
 const getItems = async (basePath) => {
   try {
@@ -49,23 +50,38 @@ const writeResults = async (date, results) => {
     service: 'timestamper',
     source: 'https://github.com/arthuredelstein/timestamper'
   }
-  const file = `wikimedia_digests_${date}.json`
+  const file = path.resolve(`../public_html/data/wikimedia_digests_${date}.json`)
   await fsPromises.writeFile(file, JSON.stringify(data))
   return file
 }
 
 const timestamp = (file) => {
-  const result = execSync(`npx ots-cli.js stamp ${file}`).toString()
+  const result = execSync(`npx opentimestamps stamp ${file}`).toString()
   console.log(result)
   return `${file}.ots`
 }
 
-const main = async () => {
-  const date = '20240420'
+const runDate = async (date) => {
   const results = await getAllShaResults(date)
   const resultsFile = await writeResults(date, results)
   const otsFile = timestamp(resultsFile)
   console.log(otsFile)
+}
+
+const latestDumpDate = () => {
+  return '20220101'
+}
+
+const main = async () => {
+  const { _: dates } = minimist(process.argv.slice(2))
+  if (dates === undefined || dates.length === 0) {
+    const date = await latestDumpDate()
+    await runDate(date)
+  } else {
+    for (const date of dates) {
+      await runDate(date)
+    }
+  }
 }
 
 if (require.main === module) {
