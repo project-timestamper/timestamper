@@ -37,7 +37,8 @@ const getAllShaResults = async (date) => {
   for (const importantFile of allImportantFiles) {
     const digest = await fileSHA256(importantFile)
     console.log(importantFile, digest)
-    results[importantFile] = digest
+    const shortPath = importantFile.replace(/^\/public\/dumps\/public\//, '')
+    results[shortPath] = digest
   }
   return results
 }
@@ -48,7 +49,9 @@ const writeResults = async (date, results) => {
     files: results,
     digest: 'SHA-256',
     service: 'timestamper',
-    source: 'https://github.com/arthuredelstein/timestamper'
+    source: 'https://github.com/arthuredelstein/timestamper',
+    local_base: '/public/dumps/public/',
+    base: ['https://dumps.wikimedia.org/', 'https://dumps.wikimedia.your.org/']
   }
   const file = path.resolve(`../public_html/data/wikimedia_digests_${date}.json`)
   await fsPromises.writeFile(file, JSON.stringify(data))
@@ -64,8 +67,7 @@ const timestamp = (file) => {
 const runDate = async (date) => {
   const results = await getAllShaResults(date)
   const resultsFile = await writeResults(date, results)
-  const otsFile = timestamp(resultsFile)
-  console.log(otsFile)
+  timestamp(resultsFile)
 }
 
 const latestDumpDate = () => {
