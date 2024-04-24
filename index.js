@@ -91,12 +91,12 @@ const latestDumpDate = async () => {
   return mostRecentDateDir.replace(enwikiDir, '')
 }
 
-const timeElapsed = (d1, d2) => (d2 - d1) / (1000 * 60 * 60 * 24)
+const daysElapsed = (d1, d2) => (d2 - d1) / (1000 * 60 * 60 * 24)
 
 const main = async (dates) => {
   if (dates === undefined || dates.length === 0) {
     const dumpDate = await latestDumpDate()
-    if (timeElapsed(strToDate(dumpDate), new Date()) > 4) {
+    if (daysElapsed(strToDate(dumpDate), new Date()) > 4) {
       await runDate(dumpDate)
     }
   } else {
