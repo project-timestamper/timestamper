@@ -3,6 +3,8 @@ const path = require('node:path')
 const { execSync } = require('node:child_process')
 const minimist = require('minimist')
 
+const LOCAL_BASE = '/public/dumps/public/'
+
 const getItems = async (basePath) => {
   try {
     const names = await fsPromises.readdir(basePath, { recursive: false })
@@ -13,7 +15,7 @@ const getItems = async (basePath) => {
 }
 
 const getDateDirs = async (date) => {
-  const entityDirs = await getItems('/public/dumps/public/')
+  const entityDirs = await getItems(LOCAL_BASE)
   const wikiDirs = entityDirs.filter(dir => dir.endsWith('wiki'))
   const wikiDatesList = await Promise.all(wikiDirs.map(getItems))
   return wikiDatesList
@@ -50,7 +52,7 @@ const writeResults = async (date, results) => {
     digest: 'SHA-256',
     service: 'timestamper',
     source: 'https://github.com/arthuredelstein/timestamper',
-    local_base: '/public/dumps/public/',
+    local_base: LOCAL_BASE,
     base: ['https://dumps.wikimedia.org/', 'https://dumps.wikimedia.your.org/']
   }
   const file = path.resolve(`../public_html/data/wikimedia_digests_${date}.json`)
