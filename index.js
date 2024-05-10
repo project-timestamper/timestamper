@@ -16,9 +16,8 @@ const getItems = async (basePath) => {
 }
 
 const getDateDirs = async (date) => {
-  const entityDirs = await getItems(LOCAL_BASE)
-  const wikiDirs = entityDirs.filter(dir => dir.endsWith('wiki'))
-  const wikiDatesList = await Promise.all(wikiDirs.map(getItems))
+  const entityDirs = (await getItems(LOCAL_BASE)).filter(f => fs.lstatSync(f).isDirectory());
+  const wikiDatesList = await Promise.all(entityDirs.map(getItems))
   return wikiDatesList
     .map(list => (list ?? []).filter(dateDir => dateDir.endsWith(date))[0])
     .filter(x => x !== undefined)
@@ -35,7 +34,7 @@ const fileSHA256 = async (file) => {
 
 const getAllShaResults = async (date) => {
   const dateDirs = await getDateDirs(date)
-  const allImportantFiles = (await Promise.all(dateDirs.map(getImportantFiles))).map(x => x[0]).map(x => x)
+  const allImportantFiles = (await Promise.all(dateDirs.map(getImportantFiles))).map(x => x[0]).filter(x => x)
   const results = {}
   for (const importantFile of allImportantFiles) {
     const digest = await fileSHA256(importantFile)
