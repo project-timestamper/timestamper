@@ -28,7 +28,7 @@ const getImportantFiles = async (dir) => {
   return files.filter(f => f.endsWith('-pages-articles.xml.bz2'))
 }
 
-const fileSHA256 = async (file) => {
+const fileSHA256 = (file) => {
   return execSync(`sha256sum ${path.resolve(file)}`).toString().split(' ')[0]
 }
 
@@ -37,7 +37,7 @@ const getAllShaResults = async (date) => {
   const allImportantFiles = (await Promise.all(dateDirs.map(getImportantFiles))).map(x => x[0]).filter(x => x)
   const results = {}
   for (const importantFile of allImportantFiles) {
-    const digest = await fileSHA256(importantFile)
+    const digest = fileSHA256(importantFile)
     console.log(importantFile, digest)
     const shortPath = importantFile.replace(/^\/public\/dumps\/public\//, '')
     results[shortPath] = digest
