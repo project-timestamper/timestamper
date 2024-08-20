@@ -3,6 +3,7 @@ const fsPromises = require('node:fs/promises')
 const minimist = require('minimist')
 const path = require('node:path')
 const { execSync } = require('node:child_process')
+const { strToDate } = require('util.js')
 
 const LOCAL_BASE = '/public/dumps/public/'
 
@@ -16,7 +17,7 @@ const getItems = async (basePath) => {
 }
 
 const getDateDirs = async (date) => {
-  const entityDirs = (await getItems(LOCAL_BASE)).filter(f => fs.lstatSync(f).isDirectory());
+  const entityDirs = (await getItems(LOCAL_BASE)).filter(f => fs.lstatSync(f).isDirectory())
   const wikiDatesList = await Promise.all(entityDirs.map(getItems))
   return wikiDatesList
     .map(list => (list ?? []).filter(dateDir => dateDir.endsWith(date))[0])
@@ -73,13 +74,6 @@ const runDate = async (date) => {
   const results = await getAllShaResults(date)
   await writeResults(date, results, outputFile)
   timestamp(outputFile)
-}
-
-const strToDate = (s) => {
-  const year = s.substring(0, 4)
-  const month = s.substring(4, 6)
-  const day = s.substring(6, 8)
-  return new Date(year, month - 1, day)
 }
 
 const latestDumpDate = async () => {
