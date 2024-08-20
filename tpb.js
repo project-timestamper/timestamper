@@ -5,6 +5,7 @@ const streamPipeline = promisify(pipeline)
 const readline = require('node:readline')
 const { zipObject } = require('lodash')
 const fs = require('node:fs')
+const { stampHashes, stampAndCollectHashes } = require('./timestamp.js')
 
 const imdbList = async function * () {
   const response = await fetch('https://datasets.imdbws.com/title.basics.tsv.gz')
@@ -94,15 +95,41 @@ const writeResults = (results) => {
   const stream = fs.createWriteStream('tpb-movies.txt', { flags: 'a' })
   for (const shortList of results) {
     for (const item of shortList) {
-      stream.write(`${item.name}\t${item.imdb}\t${item.info_hash}\n`)
+      const name = item.name.replaceAll(/\s/g, ' ').trim()
+      stream.write(`${name}\t${item.imdb}\t${item.info_hash}\n`)
     }
   }
   stream.end()
 }
 
+const readResults = () => {
+  const content = fs.readFileSync('./out/tpb-movies.txt').toString()
+  const lines = content.split('\n')
+  return lines.filter(line => line.length > 0).map(line => line.split('\t'))
+}
+
+const getResultHashes = () => {
+  const results = readResults()
+  return results.map(item => item[2])
+}
+
+const writeRows = (file, rows) => {
+  fs.rmSync(file)
+  const stream = fs.createWriteStream(file, { flags: 'a' })
+  for (const row of rows) {
+    stream.write(`${row}\n`)
+  }
+  stream.end()
+}
+
 const main = async () => {
-  const imdbItems = await asList(filterTitleType(makeRowObjects(splitLines(imdbList()))))
-  writeResults(await lookupAll(imdbItems))
+  // const imdbItems = await asList(filterTitleType(makeRowObjects(splitLines(imdbList()))))
+  // writeResults(await lookupAll(imdbItems))
+  const hashes = getResultHashes()
+  console.log('hashes.length: ', hashes.length)
+  const hashPairs = Object.entries(await stampAndCollectHashes(hashes))
+  console.log('hashPairs.length: ', hashPairs.length)
+  writeRows('tpb-hash-collection.txt', hashPairs.map(([a, b]) => `${a}\t${b}`))
 }
 
 if (require.main === module) {
