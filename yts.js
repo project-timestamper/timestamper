@@ -1,9 +1,5 @@
-const fs = require('node:fs')
-const { MerkleTree } = require('merkletreejs')
-const { createHash } = require('node:crypto')
-
-const sha256 = (x) =>
-  createHash('sha256').update(x).digest()
+import { readJson } from './util.js'
+import { stampAndUploadHashes } from './timestamp.js'
 
 const getPage = async (n) => {
   const response = await fetch(`https://yts.mx/api/v2/list_movies.json?page=${n}&limit=50`)
@@ -37,7 +33,8 @@ const formats = (movies) => {
   return { total_bytes, all_formats }
 }
 
-const movieMerkle = (leaves) => {
-  const tree = new MerkleTree(leaves, sha256, { hashLeaves: false })
-  return tree
+const timestamp = async () => {
+  const data = readJson('out/yts-movie-formats.json')
+  const hashes = data.map(item => item.hash)
+  await stampAndUploadHashes(hashes)
 }

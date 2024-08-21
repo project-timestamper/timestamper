@@ -6,6 +6,7 @@ const readline = require('node:readline')
 const { zipObject } = require('lodash')
 const fs = require('node:fs')
 const { stampHashes, stampAndCollectHashes } = require('./timestamp.js')
+const r2 = require('./r2')
 
 const imdbList = async function * () {
   const response = await fetch('https://datasets.imdbws.com/title.basics.tsv.gz')
@@ -127,9 +128,7 @@ const main = async () => {
   // writeResults(await lookupAll(imdbItems))
   const hashes = getResultHashes()
   console.log('hashes.length: ', hashes.length)
-  const hashPairs = Object.entries(await stampAndCollectHashes(hashes))
-  console.log('hashPairs.length: ', hashPairs.length)
-  writeRows('tpb-hash-collection.txt', hashPairs.map(([a, b]) => `${a}\t${b}`))
+  await stampAndUploadHashes(hashes)
 }
 
 if (require.main === module) {

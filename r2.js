@@ -1,11 +1,11 @@
 import { installIntoGlobal } from 'iterator-helpers-polyfill'
-import { readJson } from './util'
+import { readJson } from './util.js'
 import { S3Client, PutObjectCommand, CopyObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import pMap from 'p-map'
 
 installIntoGlobal()
 
-const createClient = () => {
+export const createClient = () => {
   const credentials = readJson('../cloudflare-access.json')
   return new S3Client({
     region: 'us-east-1',
@@ -17,7 +17,7 @@ const createClient = () => {
   })
 }
 
-const putObject = async (client, path, body) => {
+export const putObject = async (client, path, body) => {
   const command = new PutObjectCommand({ Bucket: 'timestamper', Key: path, Body: body })
   return client.send(command)
 }
@@ -61,5 +61,3 @@ const copyObjects = async (client, pathPairs) => {
     ([pathOld, pathNew]) => copyObject(client, pathOld, pathNew),
     { concurrency: 64, stopOnError: false })
 }
-
-module.exports = { createClient, putObject }
