@@ -2,7 +2,8 @@ import { createHash } from 'node:crypto'
 import pMap from 'p-map'
 import _ from 'lodash'
 import fs from 'node:fs'
-import { strToDate } from './util.js'
+import { readJson, strToDate } from './util.js'
+import { stampAndUploadHashes } from './timestamp.js'
 
 const fetchBookHash = async (index) => {
   const url = `https://www.gutenberg.org/cache/epub/${index}/pg${index}-h.zip`
@@ -45,4 +46,14 @@ const main = async (n) => {
     source: 'https://github.com/arthuredelstein/timestamper'
   }
   fs.writeFileSync('gutenberg.json', JSON.stringify(data))
+}
+
+const getHashes = () => {
+  const data = readJson('out/gutenberg.json')
+  return Object.values(data.files)
+}
+
+const run = async () => {
+  const hashes = getHashes()
+  await stampAndUploadHashes(hashes)
 }
