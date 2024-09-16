@@ -1,17 +1,17 @@
 import fs from 'node:fs'
 import { installIntoGlobal } from 'iterator-helpers-polyfill'
 import { stampHashes } from './timestamp'
-import { findFirstInstance } from './util'
+import { findFirstInstance, readFilePart } from './util'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
 import OpenTimestamps from 'opentimestamps'
 
 installIntoGlobal()
 
-const getInsertLines = async function * (path) {
+const getInsertLines = async function * (path, tableName) {
   let nextStart = 0
   while (true) {
-    const { position } = await findFirstInstance(path, 'INSERT INTO `fiction_hashes`', { start: nextStart })
+    const { position } = await findFirstInstance(path, `INSERT INTO \`${tableName}\``, { start: nextStart })
     if (position < 0) {
       break
     }
@@ -21,16 +21,26 @@ const getInsertLines = async function * (path) {
   }
 }
 
-const getData = async function * (path) {
-  const lines = await getInsertLines(path)
+const getData = async function * (path, tableName) {
+  const lines = await getInsertLines(path, tableName)
   for await (const line of lines) {
     const lineString = line.toString()
     const [header, rows] = lineString.split(' VALUES ')
-    const rows2 = rows.replaceAll('(', '[').replaceAll(')', ']').replaceAll('\'', '"')
-    const rows3 = JSON.parse('[' + rows2 + ']')
+    const rows2 = rows.replaceAll('(', '[').replaceAll(')', ']').replaceAll('\'', '"').replaceAll(',NULL,', ',"",')
+    let rows3
+    try {
+      rows3 = JSON.parse('[' + rows2 + ']')
+    } catch (e) {
+      console.log(rows2); throw e
+    }
     const header2 = header.split('(')[1]
     const header3 = '[' + header2.replaceAll('`', '"').replaceAll(')', ']')
-    const header4 = JSON.parse(header3)
+    let header4
+    try {
+      header4 = JSON.parse(header3)
+    } catch (e) {
+      console.log(header3); throw e
+    }
     const final = rows3.map(row => {
       const result = {}
       for (let i = 0; i < header4.length; ++i) {
@@ -50,8 +60,8 @@ const concat = async function * (arrays) {
   }
 }
 
-const extractSha256 = async function (path) {
-  const data1 = await getData(path)
+const extractSha256 = async function (path, tableName) {
+  const data1 = await getData(path, tableName)
   const data2 = await concat(data1)
   const data3 = data2.map(x => x.sha256)
   const fh = await fs.promises.open(path + '_sha256.txt', 'w')
@@ -90,9 +100,9 @@ const savePartitions = async (dir, partitionMap, hashType) => {
   const opObject = hashType === 'sha1' ? new OpenTimestamps.Ops.OpSHA1() : new OpenTimestamps.Ops.OpSHA256()
   for (const [prefix, items] of Object.entries(partitionMap)) {
     const data = Buffer.from(items.join(''), 'hex')
+    fs.writeFileSync(path.join(dir, prefix), data)
     const hash = createHash('sha256')
     hash.update(data)
-    fs.writeFileSync(path.join(dir, prefix), data)
     const digest = hash.digest()
     const detach = OpenTimestamps.DetachedTimestampFile.fromHash(opObject, digest)
     detaches.push(detach)
@@ -102,5 +112,15 @@ const savePartitions = async (dir, partitionMap, hashType) => {
   const prefixes = Object.keys(partitionMap)
   for (let i = 0; i < detachesSerialized.length; ++i) {
     fs.writeFileSync(path.join(dir, `${prefixes[i]}.ots`), detachesSerialized[i])
+  }
+}
+
+const scanForInserts = async (path) => {
+  let nextPosition = 0
+  while (true) {
+    const { position } = await findFirstInstance('/Volumes/Timestamper/libgen/libgen.sql', '\nINSERT ', { start: nextPosition })
+    const excerpt = (await readFilePart('/Volumes/Timestamper/libgen/libgen.sql', position, 200)).toString()
+    console.log(excerpt)
+    nextPosition = position + 1
   }
 }
