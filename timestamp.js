@@ -41,7 +41,6 @@ const stampAndCollectHashes = async (hashList) => {
   const hashType = hashList[0].length === 40 ? 'sha1' : 'sha256'
   const detaches = (await stampHashes(hashList, hashType)).map(
     detach => detach.serializeToBytes())
-  console.log(hashList.length, detaches.length)
   return zipMap(hashList, detaches)
 }
 
@@ -60,7 +59,23 @@ const uploadHashes = async (hashPairs) => {
   client.destroy()
 }
 
+export const saveHashes = async (filePath, hashPairs) => {
+  let i = 0
+  for (const [hash, detach] of hashPairs) {
+    ++i
+    if (i % 1000 === 0) {
+      console.log(i, '/', hashPairs.length)
+    }
+    fs.writeFileSync(path.join(filePath, 'ots', hash + '.ots'), Buffer.from(detach))
+  }
+}
+
 export const stampAndUploadHashes = async (hashList) => {
   const hashToDetachMap = await stampAndCollectHashes(hashList)
   await uploadHashes(Object.entries(hashToDetachMap))
+}
+
+export const stampAndSaveHashes = async (filePath, hashList) => {
+  const hashToDetachMap = await stampAndCollectHashes(hashList)
+  await saveHashes(filePath, Object.entries(hashToDetachMap))
 }
