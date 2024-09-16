@@ -119,6 +119,9 @@ const scanForInserts = async (path) => {
   let nextPosition = 0
   while (true) {
     const { position } = await findFirstInstance('/Volumes/Timestamper/libgen/libgen.sql', '\nINSERT ', { start: nextPosition })
+    if (position < nextPosition) {
+      break
+    }
     const excerpt = (await readFilePart('/Volumes/Timestamper/libgen/libgen.sql', position, 200)).toString()
     console.log(excerpt)
     nextPosition = position + 1
