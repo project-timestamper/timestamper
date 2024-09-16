@@ -4,17 +4,17 @@ import OpenTimestamps from 'opentimestamps'
 import { createClient, putObject } from './r2.js'
 import pMap from 'p-map'
 
-const stampHashes = async (hashList, hashType) => {
+export const stampHashes = async (hashList, hashType) => {
   const opObject = hashType === 'sha1' ? new OpenTimestamps.Ops.OpSHA1() : new OpenTimestamps.Ops.OpSHA256()
   const detaches = hashList.map(hash => {
-    const hexHash = Buffer.from(hash, 'hex')
-    return OpenTimestamps.DetachedTimestampFile.fromHash(opObject, hexHash)
+    const binaryHash = Buffer.from(hash, 'hex')
+    return OpenTimestamps.DetachedTimestampFile.fromHash(opObject, binaryHash)
   })
   await OpenTimestamps.stamp(detaches)
   return detaches
 }
 
-const writeHashes = (hashList, detaches, outDir) => {
+export const writeHashes = (hashList, detaches, outDir) => {
   const detachesSerialized = detaches.map(d => d.serializeToBytes())
   fs.mkdirSync(outDir, { recursive: true })
   for (const i in hashList) {

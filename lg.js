@@ -1,7 +1,10 @@
 import fs from 'node:fs'
 import { installIntoGlobal } from 'iterator-helpers-polyfill'
-import { stampAndSaveHashes } from './timestamp'
+import { stampHashes } from './timestamp'
 import { findFirstInstance } from './util'
+import path from 'node:path'
+import { createHash } from 'node:crypto'
+import OpenTimestamps from 'opentimestamps'
 
 installIntoGlobal()
 
@@ -80,4 +83,24 @@ const partitionByPrefix = (hashes, prefixLength) => {
     result[prefix].push(hash)
   }
   return result
+}
+
+const savePartitions = async (dir, partitionMap, hashType) => {
+  const detaches = []
+  const opObject = hashType === 'sha1' ? new OpenTimestamps.Ops.OpSHA1() : new OpenTimestamps.Ops.OpSHA256()
+  for (const [prefix, items] of Object.entries(partitionMap)) {
+    const data = Buffer.from(items.join(''), 'hex')
+    const hash = createHash('sha256')
+    hash.update(data)
+    fs.writeFileSync(path.join(dir, prefix), data)
+    const digest = hash.digest()
+    const detach = OpenTimestamps.DetachedTimestampFile.fromHash(opObject, digest)
+    detaches.push(detach)
+  }
+  await OpenTimestamps.stamp(detaches)
+  const detachesSerialized = detaches.map(d => d.serializeToBytes())
+  const prefixes = Object.keys(partitionMap)
+  for (let i = 0; i < detachesSerialized.length; ++i) {
+    fs.writeFileSync(path.join(dir, `${prefixes[i]}.ots`), detachesSerialized[i])
+  }
 }
