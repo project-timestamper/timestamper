@@ -26,7 +26,7 @@ const getData = async function * (path, tableName) {
   for await (const line of lines) {
     const lineString = line.toString()
     const [header, rows] = lineString.split(' VALUES ')
-    const rows2 = rows.replaceAll('(', '[').replaceAll(')', ']').replaceAll('\'', '"').replaceAll(',NULL,', ',"",')
+    const rows2 = rows.replaceAll('(', '[').replaceAll(')', ']').replaceAll('\'', '"').replaceAll(',NULL,', ',null,')
     let rows3
     try {
       rows3 = JSON.parse('[' + rows2 + ']')
