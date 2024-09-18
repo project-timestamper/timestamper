@@ -3,6 +3,8 @@ import path from 'node:path'
 import OpenTimestamps from 'opentimestamps'
 import { createClient, putObject } from './r2.js'
 import pMap from 'p-map'
+import { execSync } from 'node:child_process'
+import DetachedTimestampFile from 'opentimestamps/src/detached-timestamp-file.js'
 
 export const stampHashes = async (hashList, hashType) => {
   const opObject = hashType === 'sha1' ? new OpenTimestamps.Ops.OpSHA1() : new OpenTimestamps.Ops.OpSHA256()
@@ -78,4 +80,22 @@ export const stampAndUploadHashes = async (hashList) => {
 export const stampAndSaveHashes = async (filePath, hashList) => {
   const hashToDetachMap = await stampAndCollectHashes(hashList)
   await saveHashes(filePath, Object.entries(hashToDetachMap))
+}
+
+export const upgrade = async (filePath) => {
+  const buf = await fs.promises.readFile(filePath)
+  const detachedOts = DetachedTimestampFile.deserialize(buf)
+  await OpenTimestamps.upgrade(detachedOts)
+  await fs.promises.writeFile(filePath, Buffer.from(detachedOts.serializeToBytes(), 'binary'))
+}
+
+export const upgradeAll = async (dir) => {
+  const files = await fs.promises.readdir(dir)
+  // console.log(files)
+  for (const file of files) {
+    if (file.endsWith('.ots')) {
+      console.log(file)
+      await upgrade(path.join(dir, file))
+    }
+  }
 }
