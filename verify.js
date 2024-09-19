@@ -3,7 +3,10 @@ import DetachedTimestampFile from 'opentimestamps/src/detached-timestamp-file.js
 
 const collectionPrefixLengths = {
   libgen_fiction: 3,
-  libgen_nonfiction: 3
+  libgen_nonfiction: 3,
+  tpb_movies: 3,
+  yts_movies: 3,
+  gutenberg_books: 2
 }
 
 const fetchBuffer = async (url) => {
@@ -27,6 +30,7 @@ const getOts = async (collection, hashBuf) => {
   const prefix = hashString.slice(0, prefixLength).toUpperCase()
   const hashFile = `https://arthuredelstein.github.io/timestamper/${collection}/${prefix}`
   const subsetBuf = await fetchBuffer(hashFile)
+  console.log(subsetBuf)
   if (subsetBuf.indexOf(hashBuf) === -1) {
     throw new Error('hash ${hashString} not found')
   }
