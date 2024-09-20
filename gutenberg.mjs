@@ -49,7 +49,7 @@ const main = async (n) => {
 }
 
 const getHashes = () => {
-  const data = readJson('out/gutenberg.json')
+  const data = readJson('docs/gutenberg.json')
   return Object.values(data.files)
 }
 
