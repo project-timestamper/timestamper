@@ -1,12 +1,14 @@
-const zlib = require('node:zlib')
-const { pipeline } = require('node:stream')
-const { promisify } = require('node:util')
+import zlib from 'node:zlib'
+import { pipeline } from 'node:stream'
+import { promisify } from 'node:util'
+import readline from 'node:readline'
+import { zipObject } from 'lodash'
+import fs from 'node:fs'
+import { stampHashes, stampAndCollectHashes } from './timestamp.js'
+import r2 from './r2'
+import { makePartitions } from './partition.js'
+
 const streamPipeline = promisify(pipeline)
-const readline = require('node:readline')
-const { zipObject } = require('lodash')
-const fs = require('node:fs')
-const { stampHashes, stampAndCollectHashes } = require('./timestamp.js')
-const r2 = require('./r2')
 
 const imdbList = async function * () {
   const response = await fetch('https://datasets.imdbws.com/title.basics.tsv.gz')
@@ -104,7 +106,7 @@ const writeResults = (results) => {
 }
 
 const readResults = () => {
-  const content = fs.readFileSync('./out/tpb-movies.txt').toString()
+  const content = fs.readFileSync('./docs/tpb-movies.txt').toString()
   const lines = content.split('\n')
   return lines.filter(line => line.length > 0).map(line => line.split('\t'))
 }
