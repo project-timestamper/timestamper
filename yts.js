@@ -1,5 +1,7 @@
 import { readJson } from './util.js'
 import { stampAndUploadHashes } from './timestamp.js'
+import fs from 'node:fs'
+import { makePartitions } from './partition.js'
 
 const getPage = async (n) => {
   const response = await fetch(`https://yts.mx/api/v2/list_movies.json?page=${n}&limit=50`)
@@ -33,8 +35,13 @@ const formats = (movies) => {
   return { total_bytes, all_formats }
 }
 
+const readHashes = () => {
+  const formats = readJson('docs/yts-movie-formats.json')
+  return formats.map(f => f.hash)
+}
+
 const timestamp = async () => {
-  const data = readJson('out/yts-movie-formats.json')
+  const data = readJson('docs/yts-movie-formats.json')
   const hashes = data.map(item => item.hash)
   await stampAndUploadHashes(hashes)
 }
