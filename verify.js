@@ -28,6 +28,9 @@ const getOts = async (collection, hashBuf) => {
   const hashString = hashBuf.toString('hex')
   const prefixLength = collectionPrefixLengths[collection]
   const prefix = hashString.slice(0, prefixLength).toUpperCase()
+  if (prefix === undefined) {
+    throw new Error('no prefixLength found for \'collection\'')
+  }
   const hashFile = `https://arthuredelstein.github.io/timestamper/${collection}/${prefix}`
   const subsetBuf = await fetchBuffer(hashFile)
   console.log(subsetBuf)
