@@ -1,10 +1,9 @@
 import fs from 'node:fs'
 import { installIntoGlobal } from 'iterator-helpers-polyfill'
 import { execSync } from 'node:child_process'
-import { stampAndSaveHashes } from './timestamp'
 installIntoGlobal()
 
-const strToDate = (s) => {
+export const strToDate = (s) => {
   const year = s.substring(0, 4)
   const month = s.substring(4, 6)
   const day = s.substring(6, 8)
@@ -52,7 +51,7 @@ export const moveToUpperCase = async (dir) => {
   for (const filename of filenames) {
     let fixedFilename
     if (filename.endsWith('.ots')) {
-      const [a, b] = filename.split('\.')
+      const [a, b] = filename.split('.')
       fixedFilename = `${a.toUpperCase()}.${b}`
     } else {
       fixedFilename = filename.toUpperCase()

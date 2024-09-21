@@ -4,9 +4,7 @@ import { promisify } from 'node:util'
 import readline from 'node:readline'
 import { zipObject } from 'lodash'
 import fs from 'node:fs'
-import { stampHashes, stampAndCollectHashes } from './timestamp.js'
-import r2 from './r2'
-import { makePartitions } from './partition.js'
+import { stampAndUploadHashes } from './timestamp.js'
 
 const streamPipeline = promisify(pipeline)
 

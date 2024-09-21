@@ -35,7 +35,7 @@ const getOts = async (collection, hashBuf) => {
   const subsetBuf = await fetchBuffer(hashFile)
   console.log(subsetBuf)
   if (subsetBuf.indexOf(hashBuf) === -1) {
-    throw new Error('hash ${hashString} not found')
+    throw new Error(`hash ${hashString} not found`)
   }
   const subsetDigest = sha256(subsetBuf)
   const otsBuf = await fetchBuffer(hashFile + '.ots')
