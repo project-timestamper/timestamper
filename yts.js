@@ -1,3 +1,5 @@
+/* eslint camelcase: 0 */
+
 import { readJson } from './util.js'
 import { stampAndUploadHashes } from './timestamp.js'
 import fs from 'node:fs'

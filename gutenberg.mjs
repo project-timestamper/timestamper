@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import pMap from 'p-map'
 import _ from 'lodash'
 import fs from 'node:fs'
-import { readJson, strToDate } from './util.js'
+import { readJson } from './util.js'
 import { stampAndUploadHashes } from './timestamp.js'
 
 const fetchBookHash = async (index) => {
