@@ -6,7 +6,7 @@ import fs from 'node:fs'
 export const partitionByPrefix = (hashes, prefixLength) => {
   const result = {}
   for (const hash of hashes) {
-    const prefix = hash.slice(0, prefixLength)
+    const prefix = hash.slice(0, prefixLength).toUppercase()
     if (result[prefix] === undefined) {
       result[prefix] = []
     }
