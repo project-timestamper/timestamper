@@ -24,7 +24,7 @@ const sha256 = (buf) => {
   return hash.digest()
 }
 
-const getSubsetBuffer = async (collection, hashBuf) => {
+const getOtsFile = async (collection, hashBuf) => {
   const hashString = hashBuf.toString('hex')
   const prefixLength = collectionPrefixLengths[collection]
   const prefix = hashString.slice(0, prefixLength).toUpperCase()
@@ -33,14 +33,9 @@ const getSubsetBuffer = async (collection, hashBuf) => {
   }
   const hashFile = `https://arthuredelstein.github.io/timestamper/${collection}/${prefix}`
   const subsetBuf = await fetchBuffer(hashFile)
-  console.log(subsetBuf)
   if (subsetBuf.indexOf(hashBuf) === -1) {
     throw new Error(`hash ${hashString} not found`)
   }
-  return subsetBuf
-}
-
-const getOtsFileForSubsetBuffer = async (subsetBuf) => {
   const subsetDigest = sha256(subsetBuf)
   const otsBuf = await fetchBuffer(hashFile + '.ots')
   const detachedOts = DetachedTimestampFile.deserialize(otsBuf)
@@ -49,9 +44,4 @@ const getOtsFileForSubsetBuffer = async (subsetBuf) => {
     throw new Error("subset file digest doesn't match ots file digest")
   }
   return detachedOts
-}
-
-const getOtsFile = async (collection, hashBuf) => {
-  const subsetBuf = await getSubsetBuffer(collection, hashBuf)
-  return await getOtsFileForSubsetBuffer(subsetBuf)
 }
