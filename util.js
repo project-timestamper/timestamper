@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import { installIntoGlobal } from 'iterator-helpers-polyfill'
+import { execSync } from 'node:child_process'
 import { stampAndSaveHashes } from './timestamp'
 installIntoGlobal()
 
@@ -44,4 +45,21 @@ export const readFilePart = async (path, position, length) => {
   await fh.read({ position, length, buffer })
   fh.close()
   return buffer
+}
+
+export const moveToUpperCase = async (dir) => {
+  const filenames = await fs.promises.readdir(dir)
+  for (const filename of filenames) {
+    let fixedFilename
+    if (filename.endsWith('.ots')) {
+      const [a, b] = filename.split('\.')
+      fixedFilename = `${a.toUpperCase()}.${b}`
+    } else {
+      fixedFilename = filename.toUpperCase()
+    }
+    if (fixedFilename !== filename) {
+      execSync(`git mv ${filename} ${fixedFilename}`,
+        { cwd: dir })
+    }
+  }
 }
