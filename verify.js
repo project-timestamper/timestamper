@@ -6,7 +6,9 @@ const collectionPrefixLengths = {
   libgen_nonfiction: 3,
   tpb_movies: 3,
   yts_movies: 3,
-  gutenberg_books: 2
+  gutenberg_books: 2,
+  wikiart_works: 2,
+  scihub_articles: 4
 }
 
 const fetchBuffer = async (url) => {
