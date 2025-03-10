@@ -99,3 +99,17 @@ export const upgradeAll = async (dir) => {
     }
   }
 }
+
+export const countHashes = async (dir, bytesPerHash) => {
+  const files = await fs.promises.readdir(dir)
+  let total = 0
+  for (const file of files) {
+    if (!file.endsWith('.ots')) {
+      const stat = await fs.promises.stat(path.join(dir, file))
+      const count = stat.size / bytesPerHash
+      total += count
+      console.log(file, stat.size, count)
+    }
+  }
+  return total
+}
