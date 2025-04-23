@@ -32,8 +32,10 @@
     "lodash": "^4.17.21",
     "merkletreejs": "^0.4.0",
     "minimist": "^1.2.8",
+    "node-xml-stream": "^1.0.2",
     "opentimestamps": "^0.4.9",
     "p-map": "^7.0.2",
+    "p-queue": "^7.4.1",
     "parse-torrent": "9.1.5",
     "ytdl-core": "^4.11.5"
   },
