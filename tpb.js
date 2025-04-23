@@ -2,7 +2,8 @@ import zlib from 'node:zlib'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
 import readline from 'node:readline'
-import { zipObject } from 'lodash'
+import pkg from 'lodash'
+const { zipObject } = pkg
 import fs from 'node:fs'
 import { stampAndUploadHashes } from './timestamp.js'
 
@@ -136,3 +137,5 @@ if (require.main === module) {
 }
 
 // 'movie, short, tvEpisode, tvMiniSeries, tvMovie, tvPilot, tvSeries, tvShort, tvSpecial, video, videoGame'
+
+export { lookupImdbTitle }
