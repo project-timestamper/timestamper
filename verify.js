@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto'
 import DetachedTimestampFile from 'opentimestamps/src/detached-timestamp-file.js'
 
 const collectionPrefixLengths = {
+  annas_music: 4,
+  annas_music_with_embedded_meta: 4,
   libgen_fiction: 3,
   libgen_nonfiction: 3,
   tpb_movies: 3,
