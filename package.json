@@ -37,6 +37,9 @@
     "p-map": "^7.0.2",
     "p-queue": "^7.4.1",
     "parse-torrent": "9.1.5",
+    "puppeteer-core": "^24.34.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "ytdl-core": "^4.11.5"
   },
   "devDependencies": {

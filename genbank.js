@@ -1,7 +1,41 @@
 import { fetchDOM, fetchGzipAsLines } from './utils.js'
 import crypto from 'crypto'
 import fs from 'fs/promises'
+import { createWriteStream } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import path from 'node:path'
+import { pipeline } from 'node:stream/promises'
 import esMain from 'es-main'
+
+const DOWNLOAD_DIR = '/tmp/projecttimestamper'
+
+const downloadFile = async (url) => {
+  await fs.mkdir(DOWNLOAD_DIR, { recursive: true })
+  const filename = path.basename(new URL(url).pathname)
+  const dest = path.join(DOWNLOAD_DIR, filename)
+
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`download failed: ${response.status} ${url}`)
+  }
+
+  await pipeline(response.body, createWriteStream(dest))
+  return dest
+}
+
+const hashFile = (filePath) => {
+  const out = execFileSync('sha256sum', [path.resolve(filePath)], { encoding: 'utf8' })
+  return out.split(' ')[0]
+}
+
+const gunzipFile = (filePath) => {
+  const resolved = path.resolve(filePath)
+  if (!resolved.endsWith('.gz')) {
+    throw new Error(`expected .gz file: ${filePath}`)
+  }
+  execFileSync('gunzip', ['-k', resolved])
+  return resolved.slice(0, -3)
+}
 
 const baseHref = 'https://ftp.ncbi.nlm.nih.gov/genbank/'
 

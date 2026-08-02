@@ -12,9 +12,6 @@ const SUMMARY_URLS = {
 
 const USER_AGENT = 'timestamper/0.0.1 (https://github.com/arthuredelstein/timestamper)'
 const DEFAULT_OUTPUT = 'genome_hashes.txt'
-const DELAY_MS = 300
-
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 const genomicFnaUrl = (ftpPath) => {
   const dir = ftpPath.replace(/^ftp:/, 'https:').replace(/\/+$/, '')
@@ -106,6 +103,20 @@ const appendHash = (filePath, accession, digest) => {
   fs.appendFileSync(filePath, `${accession}\t${digest}\n`)
 }
 
+const formatDuration = (ms) => {
+  const totalSec = Math.max(0, Math.round(ms / 1000))
+  const h = Math.floor(totalSec / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+  const s = totalSec % 60
+  if (h > 0) {
+    return `${h}h ${m}m ${s}s`
+  }
+  if (m > 0) {
+    return `${m}m ${s}s`
+  }
+  return `${s}s`
+}
+
 export const collectGenomeHashes = async (outputPath = DEFAULT_OUTPUT) => {
   const done = loadDoneAccessions(outputPath)
   console.log('already hashed:', done.size)
@@ -113,17 +124,28 @@ export const collectGenomeHashes = async (outputPath = DEFAULT_OUTPUT) => {
   const assemblies = (await listAssemblies()).filter(asm => !done.has(asm.accession))
   console.log('remaining:', assemblies.length)
 
+  const start = Date.now()
   let hashed = 0
+  let attempted = 0
   for (const asm of assemblies) {
+    attempted++
     try {
       const digest = await hashGenome(asm.url)
       appendHash(outputPath, asm.accession, digest)
       hashed++
       console.log(asm.accession, digest)
+      if (hashed % 10 === 0) {
+        const elapsed = Date.now() - start
+        const remaining = assemblies.length - attempted
+        const eta = remaining * (elapsed / attempted)
+        console.log(
+          `progress: ${hashed} hashed, ${attempted}/${assemblies.length} attempted, ` +
+          `elapsed ${formatDuration(elapsed)}, eta ${formatDuration(eta)}`
+        )
+      }
     } catch (e) {
       console.error(asm.accession, e.message)
     }
-    await sleep(DELAY_MS)
   }
   return hashed
 }
