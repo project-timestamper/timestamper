@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { once } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 import { createInterface } from 'node:readline'
@@ -16,6 +17,10 @@ const SUMMARY_URLS = {
 const USER_AGENT = 'timestamper/0.0.1 (https://github.com/arthuredelstein/timestamper)'
 const DEFAULT_OUTPUT = 'genome_hashes.txt'
 const SUMMARY_DIR = '/tmp/projecttimestamper'
+const HASH_RETRIES = 5
+const RETRY_DELAY_MS = 10000
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 const genomicFnaUrl = (ftpPath) => {
   const dir = ftpPath.replace(/^ftp:/, 'https:').replace(/\/+$/, '')
@@ -47,7 +52,10 @@ const downloadSummary = async (url, destPath) => {
   if (!response.ok) {
     throw new Error(`fetch failed: ${response.status} ${url}`)
   }
-  await pipeline(Readable.fromWeb(response.body), fs.createWriteStream(destPath))
+  const body = Readable.fromWeb(response.body)
+  // Prevent unhandled 'error' if NCBI closes the socket after pipeline rejects.
+  body.on('error', () => {})
+  await pipeline(body, fs.createWriteStream(destPath))
 }
 
 const countAssembliesInFile = async (filePath, done) => {
@@ -85,17 +93,59 @@ async function * iterateAssembliesFromFile (filePath) {
   }
 }
 
-const hashGenome = async (url) => {
+const hashGenomeOnce = async (url) => {
   const response = await fetch(url, { headers: { 'User-Agent': USER_AGENT } })
   if (!response.ok) {
     throw new Error(`status: ${response.status} ${url}`)
   }
-  const hash = createHash('sha256')
-  const input = Readable.fromWeb(response.body).pipe(createGunzip())
-  for await (const chunk of input) {
-    hash.update(chunk)
+  if (!response.body) {
+    throw new Error(`no body: ${url}`)
   }
-  return hash.digest('hex')
+
+  const hash = createHash('sha256')
+  const gunzip = createGunzip()
+
+  const digestPromise = new Promise((resolve, reject) => {
+    gunzip.on('data', (chunk) => {
+      hash.update(chunk)
+    })
+    gunzip.once('error', reject)
+    gunzip.once('end', () => {
+      resolve(hash.digest('hex'))
+    })
+  })
+
+  try {
+    // Iterate the web body directly — avoids Readable.fromWeb unhandled 'error' crashes.
+    for await (const chunk of response.body) {
+      if (!gunzip.write(chunk)) {
+        await once(gunzip, 'drain')
+      }
+    }
+    gunzip.end()
+    return await digestPromise
+  } catch (e) {
+    gunzip.destroy()
+    digestPromise.catch(() => {})
+    throw e
+  }
+}
+
+const hashGenome = async (url) => {
+  let lastError
+  for (let attempt = 1; attempt <= HASH_RETRIES; attempt++) {
+    try {
+      return await hashGenomeOnce(url)
+    } catch (e) {
+      lastError = e
+      const cause = e.cause ? ` (${e.cause.message || e.cause})` : ''
+      console.error(`retry ${attempt}/${HASH_RETRIES}`, url, `${e.message}${cause}`)
+      if (attempt < HASH_RETRIES) {
+        await sleep(RETRY_DELAY_MS * attempt)
+      }
+    }
+  }
+  throw lastError
 }
 
 const loadDoneAccessions = (filePath) => {
