@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import { createInterface } from 'node:readline'
 import { Readable } from 'node:stream'
+import { createGunzip } from 'node:zlib'
 import minimist from 'minimist'
 import esMain from 'es-main'
 
@@ -67,7 +68,8 @@ const hashGenome = async (url) => {
     throw new Error(`status: ${response.status} ${url}`)
   }
   const hash = createHash('sha256')
-  for await (const chunk of response.body) {
+  const input = Readable.fromWeb(response.body).pipe(createGunzip())
+  for await (const chunk of input) {
     hash.update(chunk)
   }
   return hash.digest('hex')
