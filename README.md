@@ -24,7 +24,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | wikiart_works | ~192K | SHA-256 | 32 | 2 | 2025-02-27 | Computed |
 | yts_movies | ~135K | SHA-1 | 20 | 3 | 2024-09-19 | Infohashes |
 | annas_music | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
-| annas_music_with_embedded_meta | ~85M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
+| annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
