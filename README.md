@@ -50,7 +50,7 @@ For example, the `000` file in libgen_fiction contains a concatenation of digest
 To manually verify that a work existed by the attested date, you can carry out the following steps:
 
 1. Digest the work with that collection’s **Hash algorithm** (SHA-256, SHA-1, or MD5, depending on the collection)
-2. Take the first **Prefix size** hex digits of the digest converted to uppercase, and load `docs/<collection>/<PREFIX>` (or fetch the hosted copy at https://project-timestamper.github.io/timestamper/<collection>/<PREFIX>). Also load the corresponding `<PREFIX>.ots` file.
+2. Take the first **Prefix size** hex digits of the digest converted to uppercase, and load `docs/<collection>/<PREFIX>` (or fetch the hosted copy at `https://project-timestamper.github.io/timestamper/<collection>/<PREFIX>`). Also load the corresponding `<PREFIX>.ots` file.
 3. Confirm that the hash file contains the digest as raw bytes, using a digest length given by the **Bytes/hash** column.
 4. Verify the `.ots` proof against Bitcoin (for example `ots verify 000.ots`). Success proves that the hash list file, and therefore the work and its digest, existed by the attested block time.
 
