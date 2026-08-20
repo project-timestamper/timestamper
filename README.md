@@ -1,4 +1,4 @@
-# README
+# Project Timestamper
 
 ## Overview
 
