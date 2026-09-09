@@ -26,6 +26,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | annas_music | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
 | annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
 | ncbi_genomes | ~4.2M | SHA-256 | 32 | 3 | 2026-08-21 | Computed |
+| annas_archive_torrents | ~25K | SHA-1 | 20 | 2 | 20260908 | Infohashes |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
