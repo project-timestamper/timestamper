@@ -27,11 +27,14 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
 | ncbi_genomes | ~4.2M | SHA-256 | 32 | 3 | 2026-08-21 | Computed |
 | annas_archive_torrents | ~25K | SHA-1 | 20 | 2 | 2026-09-08 | Infohashes |
+| annas_literature_hashes | ~17.0M | MD5 | 16 | 4 | 2026-09-09 | Torrent metadata |
+| epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
 - *Source database*: digests computed by source
 - *Infohashes*: digests extracted from torrent links
+- *Torrent metadata*: content digests extracted from torrent file lists
 
 In each case, hash lists containing these digests were the files submitted to OpenTimestamps for timestamping.
 
