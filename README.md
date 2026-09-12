@@ -59,6 +59,6 @@ To manually verify that a work existed by the attested date, you can carry out t
 3. Confirm that the hash file contains the digest as raw bytes, using a digest length given by the **Bytes/hash** column.
 4. Verify the `.ots` proof against Bitcoin (for example `ots verify 000.ots`). Success proves that the hash list file, and therefore the work and its digest, existed by the attested block time.
 
-Automated tools for verification are planned.
+Automated tools for verification in https://github.com/project-timestamper/stamper.
 
 
