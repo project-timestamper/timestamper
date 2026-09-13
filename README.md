@@ -61,4 +61,37 @@ To manually verify that a work existed by the attested date, you can carry out t
 
 Automated tools for verification in https://github.com/project-timestamper/stamper.
 
+## Common Crawl index proofs
+
+Common Crawl’s monthly CDX index is too large to store per-capture digests in this repository. Instead, proofs target **ZipNum blocks**: each `cdx-*.gz` shard is a concatenation of gzip members (~3000 CDX lines each). Project Timestamper records the **SHA-256 of each compressed member** in the usual partitioned hash lists + `.ots` files.
+
+| Scope | ≈ ZipNum blocks | Hash list size (32 bytes/hash) |
+|---|---:|---:|
+| One month | ~873K | ~28 MB |
+| All crawls in `collinfo.json` (~127) | ~111M | ~3.5 GB |
+
+The CDX shards themselves stay on Common Crawl (`data.commoncrawl.org`). Block location at verify time comes from Common Crawl’s CDX API (`showPagedIndex`), so no large SURT→block locator need be hosted here.
+
+### Verification procedure
+
+To verify that a URL’s capture was present in a given crawl’s index by the attested date:
+
+1. Choose a crawl id (for example `CC-MAIN-2026-34`) and the URL of interest.
+2. Locate the ZipNum block with one API request:
+   ```
+   GET https://index.commoncrawl.org/<CRAWL>-index?url=<URL>&output=json&showPagedIndex=true&page=0
+   ```
+   The JSON includes `part` (e.g. `cdx-00066.gz`), `offset`, and `length` (compressed byte range of that gzip member). The `urlkey` field is the **first** key in the block, not necessarily the query URL.
+3. Download that block only (~280 KB typical; a few MB at most):
+   ```
+   GET https://data.commoncrawl.org/cc-index/collections/<CRAWL>/indexes/<part>
+   Range: bytes=<offset>-<offset+length-1>
+   ```
+4. Compute `H = SHA-256` of the downloaded compressed bytes.
+5. Take the prefix of `H` and load the corresponding hash list + `.ots` for the Common Crawl collection (same layout as [Verification](#verification) above). Confirm `H` is present as raw bytes and verify the `.ots` proof.
+6. Gunzip the block and confirm it contains the expected CDX line (URL / digest).
+7. Use the line’s WARC `filename` / `offset` / `length` for a second range request to `data.commoncrawl.org`, download the payload, hash it with SHA-1 and verify a match with the CDX `digest`.
+
+Typical verify traffic for verification is a few small requests totaling on the order of **~0.3–0.4 MB** (excluding payload).
+
 
