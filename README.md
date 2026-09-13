@@ -63,11 +63,18 @@ Automated tools for verification in https://github.com/project-timestamper/stamp
 
 ## Common Crawl index proofs
 
-Common Crawl’s monthly CDX index is too large to store per-capture digests in this repository. Instead, proofs target **ZipNum blocks**: each `cdx-*.gz` shard is a concatenation of gzip members (~3000 CDX lines each). Project Timestamper records the **SHA-256 of each compressed member** in the usual partitioned hash lists + `.ots` files.
+Common Crawl’s monthly CDX index is too large to store per-capture digests in this repository. Instead, proofs target **ZipNum blocks**: each `cdx-*.gz` shard is a concatenation of gzip members (~3000 CDX lines each). Project Timestamper records the **SHA-256 of each compressed member** in a binary hash list **per shard** (not prefix-partitioned), plus a corresponding `.ots` file:
+
+```
+docs/common_crawl_blocks/<CRAWL>/cdx-NNNNN      # ~2900 × 32-byte digests (~93 KB)
+docs/common_crawl_blocks/<CRAWL>/cdx-NNNNN.ots  # OpenTimestamps attestation
+```
+
+The hash list filename is the CDX `part` with `.gz` stripped (e.g. `cdx-00066.gz` → `cdx-00066`). Digests are concatenated in block order within that shard.
 
 | Scope | ≈ ZipNum blocks | Hash list size (32 bytes/hash) |
 |---|---:|---:|
-| One month | ~873K | ~28 MB |
+| One month (~300 shards) | ~873K | ~28 MB |
 | All crawls in `collinfo.json` (~127) | ~111M | ~3.5 GB |
 
 The CDX shards themselves stay on Common Crawl (`data.commoncrawl.org`). Block location at verify time comes from Common Crawl’s CDX API (`showPagedIndex`), so no large SURT→block locator need be hosted here.
@@ -88,10 +95,13 @@ To verify that a URL’s capture was present in a given crawl’s index by the a
    Range: bytes=<offset>-<offset+length-1>
    ```
 4. Compute `H = SHA-256` of the downloaded compressed bytes.
-5. Take the prefix of `H` and load the corresponding hash list + `.ots` for the Common Crawl collection (same layout as [Verification](#verification) above). Confirm `H` is present as raw bytes and verify the `.ots` proof.
+5. Load the shard hash list and attestation named from `part` (strip `.gz`):
+   `docs/common_crawl_blocks/<CRAWL>/cdx-NNNNN` and `cdx-NNNNN.ots`
+   (or the hosted copies under `https://project-timestamper.github.io/timestamper/common_crawl_blocks/<CRAWL>/…`).
+   Confirm `H` is present as raw 32-byte digests in that file, then verify the `.ots` proof (for example `ots verify cdx-00066.ots`).
 6. Gunzip the block and confirm it contains the expected CDX line (URL / digest).
 7. Use the line’s WARC `filename` / `offset` / `length` for a second range request to `data.commoncrawl.org`, download the payload, hash it with SHA-1 and verify a match with the CDX `digest`.
 
-Typical verify traffic for verification is a few small requests totaling on the order of **~0.3–0.4 MB** (excluding payload).
+Typical verify traffic is a few small requests on the order of **~0.4 MB** (hash list ~93 KB + block ~280 KB, excluding WARC payload).
 
 
