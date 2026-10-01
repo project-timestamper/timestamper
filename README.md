@@ -29,6 +29,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | annas_archive_torrents | ~25K | SHA-1 | 20 | 2 | 2026-09-08 | Infohashes |
 | annas_literature_hashes | ~17.0M | MD5 | 16 | 4 | 2026-09-09 | Torrent metadata |
 | epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
+| pdb_files | ~4.73M | SHA-256 | 32 | 3 | 2026-09-26 | Computed |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
