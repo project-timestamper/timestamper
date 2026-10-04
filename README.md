@@ -16,22 +16,22 @@ Each collection's set of proofs is in its own directory. These proofs are static
 
 | Collection | Item count | Hash algorithm | Bytes/hash | Prefix size (hex digits) | Timestamp date | Hash source |
 |---|---|---|---|---|---|---|
+| annas_archive_torrents | ~25K | SHA-1 | 20 | 2 | 2026-09-08 | Infohashes |
+| annas_literature_hashes | ~17.0M | MD5 | 16 | 4 | 2026-09-09 | Torrent metadata |
+| annas_music | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
+| annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
+| arxiv_papers | ~7.29M | MD5 | 16 | 3 | 2026-10-01 | Source database |
+| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~111M | SHA-256 | 32 | — | 2026-09-26 | Computed |
+| epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
 | gutenberg_books | ~72K | SHA-256 | 32 | 2 | 2024-09-19 | Computed |
 | libgen_fiction | ~3.03M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
 | libgen_nonfiction | ~4.37M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
+| ncbi_genomes | ~4.2M | SHA-256 | 32 | 3 | 2026-08-21 | Computed |
+| pdb_files | ~4.73M | SHA-256 | 32 | 3 | 2026-09-26 | Computed |
 | scihub_articles | ~85.1M | MD5 | 16 | 4 | 2024-10-11 | Source database |
 | tpb_movies | ~822K | SHA-1 | 20 | 3 | 2024-09-19 | Infohashes |
 | wikiart_works | ~192K | SHA-256 | 32 | 2 | 2025-02-27 | Computed |
 | yts_movies | ~135K | SHA-1 | 20 | 3 | 2024-09-19 | Infohashes |
-| annas_music | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
-| annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
-| ncbi_genomes | ~4.2M | SHA-256 | 32 | 3 | 2026-08-21 | Computed |
-| annas_archive_torrents | ~25K | SHA-1 | 20 | 2 | 2026-09-08 | Infohashes |
-| annas_literature_hashes | ~17.0M | MD5 | 16 | 4 | 2026-09-09 | Torrent metadata |
-| epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
-| pdb_files | ~4.73M | SHA-256 | 32 | 3 | 2026-09-26 | Computed |
-| arxiv_papers | ~7.29M | MD5 | 16 | 3 | 2026-10-01 | Source database |
-| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~111M | SHA-256 | 32 | — | 2026-09-26 | Computed |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
