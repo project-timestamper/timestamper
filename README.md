@@ -24,6 +24,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~111M | SHA-256 | 32 | — | 2026-09-26 | Computed |
 | epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
 | gutenberg_books | ~72K | SHA-256 | 32 | 2 | 2024-09-19 | Computed |
+| human_genome_variants | ~5.4K | SHA-256 | 32 | 1 | 2026-09-14 | Computed |
 | libgen_fiction | ~3.03M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
 | libgen_nonfiction | ~4.37M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
 | ncbi_genomes | ~4.2M | SHA-256 | 32 | 3 | 2026-08-21 | Computed |
