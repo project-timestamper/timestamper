@@ -30,6 +30,8 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | annas_literature_hashes | ~17.0M | MD5 | 16 | 4 | 2026-09-09 | Torrent metadata |
 | epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
 | pdb_files | ~4.73M | SHA-256 | 32 | 3 | 2026-09-26 | Computed |
+| arxiv_papers | ~7.29M | MD5 | 16 | 3 | 2026-10-01 | Source database |
+| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~111M | SHA-256 | 32 | — | 2026-09-26 | Computed |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
@@ -64,7 +66,9 @@ Automated tools for verification in https://github.com/project-timestamper/stamp
 
 ## Common Crawl index proofs
 
-Common Crawl’s monthly CDX index is too large to store per-capture digests in this repository. Instead, proofs target **ZipNum blocks**: each `cdx-*.gz` shard is a concatenation of gzip members (~3000 CDX lines each). Project Timestamper records the **SHA-256 of each compressed member** in a binary hash list **per shard** (not prefix-partitioned), plus a corresponding `.ots` file:
+Common Crawl’s monthly CDX index is too large to store per-capture digests in this repository. Those proofs live in a separate repo: [timestamper-commoncrawl](https://github.com/project-timestamper/timestamper-commoncrawl).
+
+Proofs target **ZipNum blocks**: each `cdx-*.gz` shard is a concatenation of gzip members (~3000 CDX lines each). Project Timestamper records the **SHA-256 of each compressed member** in a binary hash list **per shard** (not prefix-partitioned), plus a corresponding `.ots` file:
 
 ```
 docs/common_crawl_blocks/<CRAWL>/cdx-NNNNN      # ~2900 × 32-byte digests (~93 KB)
@@ -76,7 +80,7 @@ The hash list filename is the CDX `part` with `.gz` stripped (e.g. `cdx-00066.gz
 | Scope | ≈ ZipNum blocks | Hash list size (32 bytes/hash) |
 |---|---:|---:|
 | One month (~300 shards) | ~873K | ~28 MB |
-| All crawls in `collinfo.json` (~127) | ~111M | ~3.5 GB |
+| All crawls (~128) | ~111M | ~3.5 GB |
 
 The CDX shards themselves stay on Common Crawl (`data.commoncrawl.org`). Block location at verify time comes from Common Crawl’s CDX API (`showPagedIndex`), so no large SURT→block locator need be hosted here.
 
