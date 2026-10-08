@@ -21,7 +21,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | annas_music | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
 | annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
 | arxiv_papers | ~7.29M | MD5 | 16 | 3 | 2026-10-01 | Source database |
-| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~111M | SHA-256 | 32 | — | 2026-09-26 | Computed |
+| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~134M | SHA-256 | 32 | — | 2026-09-26 | Computed |
 | epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
 | gutenberg_books | ~72K | SHA-256 | 32 | 2 | 2024-09-19 | Computed |
 | human_genome_variants | ~5.4K | SHA-256 | 32 | 1 | 2026-09-14 | Computed |
@@ -81,7 +81,7 @@ The hash list filename is the CDX `part` with `.gz` stripped (e.g. `cdx-00066.gz
 | Scope | ≈ ZipNum blocks | Hash list size (32 bytes/hash) |
 |---|---:|---:|
 | One month (~300 shards) | ~873K | ~28 MB |
-| All crawls (~128) | ~111M | ~3.5 GB |
+| All crawls (~128) | ~134M | ~3.5 GB |
 
 The CDX shards themselves stay on Common Crawl (`data.commoncrawl.org`). Block location at verify time comes from Common Crawl’s CDX API (`showPagedIndex`), so no large SURT→block locator need be hosted here.
 
