@@ -69,17 +69,17 @@ Automated tools for verification are at https://github.com/project-timestamper/s
 
 Common Crawl’s monthly CDXJ index is too large to store digests in this repository. Those proofs live in a separate repo: [timestamper-commoncrawl](https://github.com/project-timestamper/timestamper-commoncrawl).
 
-The Common Crawl CDXJ index is structured hierarchically. A single page capture is represented by an index line, containing a URL and a SHA-1 digest of the content. Up to 3000 index lines are bundled together in a ZipNum block. A few thousand (on average) ZipNum blocks are concatenated in a gzipped shard file. Each crawl (representing captures obtained on a given month) contains 300 shards. At the time of writing, 128 crawls made up the whole collection.
+The Common Crawl CDXJ index is structured hierarchically. A single page capture is represented by an index line, containing a URL and a SHA-1 digest of the content. Up to 3000 index lines are concatenated together in a ZipNum block. A few thousand (on average) ZipNum blocks are concatenated in a gzipped shard file. Each crawl (representing captures obtained on a given month) contains 300 shards. At the time of writing, 128 crawls made up the whole collection.
 
-**Common Crawl Index Statistic as of 2026-09-26**:
-- 128 total crawls
-- Shards (gzip files) per crawl: 300 (38,400 total shards)
-- ZipNum blocks per shard: 3,503 on average (134,497,076 total blocks)
-- Page capture lines per block: 2527 on average (339.8 billion total page capture lines)
+As of 2026-09-26, the Common Crawl Index Statistics were as follows:
+ * 128 total crawls
+ * 300 shards (gzip files) per crawl (38,400 total shards)
+ * 3503 ZipNum blocks per shard, on average (134,497,076 total ZipNum blocks)
+ * 2527 page capture lines per ZipNum block, on average (339.8 billion total page capture lines)
 
-(The corresponding WARC data is more than 10 PiB.)
+(The corresponding full-page capture data (in WARC files) exceeded 10 PiB.)
 
-Each `cdx-*.gz` shard is a concatenation of ZipNum blocks (up to 3000 CDXJ lines each). Project Timestamper records the **SHA-256 of each ZipNum block** in a binary hash list **per shard** (not prefix-partitioned), plus a corresponding `.ots` file. For example (within the timestamper-commoncrawl repository):
+Project Timestamper downloaded each `cdx-*.gz` shard file one by one, recording the SHA-256 of each ZipNum blocks in the shard, and collecting those digests in a binary hash list per shard (not prefix-partitioned), plus a corresponding `.ots` file. For example (within the timestamper-commoncrawl repository):
 
 ```
 docs/common_crawl_blocks/<CRAWL>/cdx-NNNNN      # ~2900 × 32-byte digests (~93 KB)
