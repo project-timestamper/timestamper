@@ -24,6 +24,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~134M | SHA-256 | 32 | — | 2026-09-26 | Computed |
 | epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
 | gutenberg_books | ~72K | SHA-256 | 32 | 2 | 2024-09-19 | Computed |
+| github_repos | ~2.87M | SHA-1 | 20 | 3 | 2026-10-10 | Commit digests |
 | human_genome_variants | ~5.4K | SHA-256 | 32 | 1 | 2026-09-14 | Computed |
 | libgen_fiction | ~3.03M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
 | libgen_nonfiction | ~4.37M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
@@ -39,6 +40,7 @@ Hash source indicates how the digests were obtained:
 - *Source database*: digests computed by source
 - *Infohashes*: digests extracted from torrent links
 - *Torrent metadata*: content digests extracted from torrent file lists
+- *Commit digests*: default-branch tip commit IDs (as of a published cutoff) from GitHub
 
 In each case, hash lists containing these digests were the files submitted to OpenTimestamps for timestamping.
 
@@ -115,4 +117,20 @@ To verify that a URL’s capture was present in a given crawl’s index by the a
 
 Typical verify traffic is a few small requests on the order of **~0.4 MB** (hash list ~93 KB + block ~280 KB, excluding WARC payload).
 
+## GitHub repo verification
+
+The `github_repos` collection attests default-branch tip commits as of a cutoff time **D**, published in `docs/github_repos/github_until.txt`.
+
+To verify that a repository’s history includes an attested tip:
+
+1. Read **D** from `docs/github_repos/github_until.txt` (also attested as `github_until.txt.ots`).
+2. Clone the repository and check out its default branch.
+3. Find the most recent commit on that branch with committer date at or before **D**:
+   ```
+   git log -1 --before=<D> --format=%H
+   ```
+   Call that commit digest *C*.
+4. Look up *C* in `docs/github_repos` using the general [Verification](#verification) steps (SHA-1, prefix size 3).
+
+If *C* is present and the `.ots` proof verifies, that commit—and therefore that snapshot of the project’s default-branch history—existed by the attested time.
 
