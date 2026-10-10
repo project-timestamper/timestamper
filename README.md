@@ -14,26 +14,26 @@ For more information on Project Timestamper, please see https://projecttimestamp
 
 Each collection's set of proofs is in its own directory. These proofs are static files containing hash list files and an OpenTimestamps (`.ots`) attestation of those files.
 
-| Collection | Item count | Hash algorithm | Bytes/hash | Prefix size (hex digits) | Timestamp date | Hash source |
-|---|---|---|---|---|---|---|
-| annas_archive_torrents | ~25K | SHA-1 | 20 | 2 | 2026-09-08 | Infohashes |
-| annas_literature_hashes | ~17.0M | MD5 | 16 | 4 | 2026-09-09 | Torrent metadata |
-| annas_music | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
-| annas_music_with_embedded_meta | ~86M | SHA-256 | 32 | 4 | 2025-12-27 | Source database |
-| arxiv_papers | ~7.29M | MD5 | 16 | 3 | 2026-10-01 | Source database |
-| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~134M | SHA-256 | 32 | — | 2026-09-26 | Computed |
-| epo_patents | ~7.01M | SHA-256 | 32 | 3 | 2026-09-09 | Computed |
-| gutenberg_books | ~72K | SHA-256 | 32 | 2 | 2024-09-19 | Computed |
-| github_repos | ~2.87M | SHA-1 | 20 | 3 | 2026-10-10 | Commit digests |
-| human_genome_variants | ~5.4K | SHA-256 | 32 | 1 | 2026-09-14 | Computed |
-| libgen_fiction | ~3.03M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
-| libgen_nonfiction | ~4.37M | SHA-256 | 32 | 3 | 2024-09-16 | Source database |
-| ncbi_genomes | ~4.2M | SHA-256 | 32 | 3 | 2026-08-21 | Computed |
-| pdb_files | ~4.73M | SHA-256 | 32 | 3 | 2026-09-26 | Computed |
-| scihub_articles | ~85.1M | MD5 | 16 | 4 | 2024-10-11 | Source database |
-| tpb_movies | ~822K | SHA-1 | 20 | 3 | 2024-09-19 | Infohashes |
-| wikiart_works | ~192K | SHA-256 | 32 | 2 | 2025-02-27 | Computed |
-| yts_movies | ~135K | SHA-1 | 20 | 3 | 2024-09-19 | Infohashes |
+| Collection | Item count | Hash algorithm | Prefix size (hex digits) | Timestamp date | Hash source |
+|---|---|---|---|---|---|
+| annas_archive_torrents | ~25K | SHA-1 | 2 | 2026-09-08 | Infohashes |
+| annas_literature_hashes | ~17.0M | MD5 | 4 | 2026-09-09 | Torrent metadata |
+| annas_music | ~86M | SHA-256 | 4 | 2025-12-27 | Source database |
+| annas_music_with_embedded_meta | ~86M | SHA-256 | 4 | 2025-12-27 | Source database |
+| arxiv_papers | ~7.29M | MD5 | 3 | 2026-10-01 | Source database |
+| [common_crawl_blocks](https://github.com/project-timestamper/timestamper-commoncrawl) | ~134M | SHA-256 | — | 2026-09-26 | Computed |
+| epo_patents | ~7.01M | SHA-256 | 3 | 2026-09-09 | Computed |
+| gutenberg_books | ~72K | SHA-256 | 2 | 2024-09-19 | Computed |
+| github_repos | ~2.87M | SHA-1 | 3 | 2026-10-10 | Commit digests |
+| human_genome_variants | ~5.4K | SHA-256 | 1 | 2026-09-14 | Computed |
+| libgen_fiction | ~3.03M | SHA-256 | 3 | 2024-09-16 | Source database |
+| libgen_nonfiction | ~4.37M | SHA-256 | 3 | 2024-09-16 | Source database |
+| ncbi_genomes | ~4.2M | SHA-256 | 3 | 2026-08-21 | Computed |
+| pdb_files | ~4.73M | SHA-256 | 3 | 2026-09-26 | Computed |
+| scihub_articles | ~85.1M | MD5 | 4 | 2024-10-11 | Source database |
+| tpb_movies | ~822K | SHA-1 | 3 | 2024-09-19 | Infohashes |
+| wikiart_works | ~192K | SHA-256 | 2 | 2025-02-27 | Computed |
+| yts_movies | ~135K | SHA-1 | 3 | 2024-09-19 | Infohashes |
 
 Hash source indicates how the digests were obtained: 
 - *Computed*: digests computed by Project Timestamper
@@ -62,7 +62,7 @@ To manually verify that a work existed by the attested date, you can carry out t
 
 1. Digest the work with that collection’s **Hash algorithm** (SHA-256, SHA-1, or MD5, depending on the collection)
 2. Take the first **Prefix size** hex digits of the digest converted to uppercase, and load `docs/<collection>/<PREFIX>` (or fetch the hosted copy at `https://project-timestamper.github.io/timestamper/<collection>/<PREFIX>`). Also load the corresponding `<PREFIX>.ots` file.
-3. Confirm that the hash file contains the digest as raw bytes, using a digest length given by the **Bytes/hash** column.
+3. Confirm that the hash file contains the digest as raw bytes (16 bytes for MD5, 20 for SHA-1, 32 for SHA-256).
 4. Verify the `.ots` proof against Bitcoin (for example `ots verify 000.ots`). Success proves that the hash list file, and therefore the work and its digest, existed by the attested block time.
 
 Automated tools for verification are at https://github.com/project-timestamper/stamper.
