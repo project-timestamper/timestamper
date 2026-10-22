@@ -33,7 +33,7 @@ Each collection's set of proofs is in its own directory. These proofs are static
 | pdb_files | ~4.73M | SHA-256 | 3 | 2026-09-26 | Computed |
 | scihub_articles | ~85.1M | MD5 | 4 | 2024-10-11 | Source database |
 | tpb_movies | ~822K | SHA-1 | 3 | 2024-09-19 | Infohashes |
-| uspto_patents | ~14.2M | SHA-256 | 4 | 2026-10-21 | Computed |
+| [uspto_patents](https://github.com/project-timestamper/timestamper2) | ~14.2M | SHA-256 | 4 | 2026-10-21 | Computed |
 | wikiart_works | ~192K | SHA-256 | 2 | 2025-02-27 | Computed |
 | yts_movies | ~135K | SHA-1 | 3 | 2024-09-19 | Infohashes |
 
